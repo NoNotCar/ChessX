@@ -5,6 +5,7 @@ import Img
 import sys, os
 from Piece import *
 import Board
+import random
 bw=(198,152,73)
 bb=(122,51,0)
 clock=pygame.time.Clock()
@@ -12,8 +13,10 @@ breaking=False
 eRect=pygame.Rect(0,0,0,0)
 edit=eRect
 play=eRect
+airect=eRect
 check=False
 mate=False
+ai=False
 while not breaking:
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
@@ -24,10 +27,13 @@ while not breaking:
                 breaking="EDIT"
             elif play.collidepoint(*mpos):
                 breaking="PLAY"
+            elif airect.collidepoint(*mpos):
+                ai=not ai
     screen.fill((125,125,125))
     Img.bcentre(Img.tfont,"CHESS X",screen)
     play=Img.bcentre(Img.hfont,"PLAY",screen,45)
     edit=Img.bcentre(Img.hfont,"EDIT",screen,75)
+    airect=Img.bcentre(Img.hfont,"USE AI",screen,105,(255,0,0) if ai else (0,0,0))
     pygame.display.flip()
     clock.tick(30)
 if breaking=="PLAY":
@@ -91,10 +97,16 @@ if breaking=="PLAY":
         for n,pc in enumerate(sranks[rankselections[c]]):
             board.add_p(pc,n,y,c)
     while True:
+        if ai and board.turn:
+            cmove=random.choice(board.get_best_moves(1))
+            board.move_p(*cmove)
+            board.turn=1-board.turn
+            check=board.ischeck(board.turn)
+            mate=board.is_mate(board.turn)
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 sys.exit()
-            elif event.type==pygame.MOUSEBUTTONDOWN and event.button==1:
+            elif event.type==pygame.MOUSEBUTTONDOWN and event.button==1 and (not ai or not board.turn):
                 mpos=pygame.mouse.get_pos()
                 if pygame.Rect(448,544,128,32).collidepoint(*mpos):
                     check=True
