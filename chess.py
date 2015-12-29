@@ -103,6 +103,11 @@ if breaking=="PLAY":
             board.turn=1-board.turn
             check=board.ischeck(board.turn)
             mate=board.is_mate(board.turn)
+            if board.is_stalemate():
+                check=False
+                mate=True
+            if mate:
+                board.turn=1-board.turn
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 sys.exit()
@@ -122,6 +127,9 @@ if breaking=="PLAY":
                                 moves=[]
                                 check=board.ischeck(board.turn)
                                 mate=board.is_mate(board.turn)
+                                if board.is_stalemate():
+                                    check=False
+                                    mate=True
                                 if mate:
                                     board.turn=1-board.turn
                             break

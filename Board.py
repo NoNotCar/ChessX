@@ -5,6 +5,7 @@ class Board(object):
         for _ in range(8):
             self.p.append([None]*8)
         self.turn=0
+        self.positions=[]
     def get_p(self,x,y):
         return self.p[x][y]
     def add_p(self,pc,x,y,c):
@@ -19,12 +20,15 @@ class Board(object):
                 self.p[tx][ty]=p
                 self.p[p.x][p.y]=None
                 p.place(tx,ty)
+                p.onmove(self.p)
+                self.positions.append([[p.symbol if p else "" for p in row] for row in self.p])
                 return True
             return False
         else:
             self.p[tx][ty]=p
             self.p[p.x][p.y]=None
             p.place(tx,ty)
+            p.onmove(self.p)
 
     def ischeck(self,side):
         royalps=[]
@@ -60,7 +64,10 @@ class Board(object):
                         if bco.ischeck(1-side) and bco.is_mate(1-side):
                             return [[p,mx,my]]
                         if not bco.ischeck(side):
-                            moves.append([p,mx,my,bco.boardvalue(side),bco.developement_value(side)])
+                            if bco.is_stalemate():
+                                moves.append([p,mx,my,-500,bco.developement_value(side)])
+                            else:
+                                moves.append([p,mx,my,bco.boardvalue(side),bco.developement_value(side)])
         bv=max([m[3] for m in moves])
         bvs=[m[:3]+[m[4]] for m in moves if m[3]==bv]
         bd=min([m[3] for m in bvs])
@@ -98,6 +105,18 @@ class Board(object):
                         if not bco.ischeck(side):
                             return False
         return True
+    def is_stalemate(self):
+        uniquepos=[]
+        doublepos=[]
+        for pos in self.positions:
+            if pos not in uniquepos:
+                uniquepos.append(pos)
+            elif pos not in doublepos:
+                doublepos.append(pos)
+            else:
+                return True
+        return False
+
     def gen_ps(self,side=None):
         for row in self.p:
             for p in row:

@@ -101,6 +101,8 @@ class Piece(object):
     def place(self, x, y):
         self.x = x
         self.y = y
+    def onmove(self,p):
+        pass
 
 
 class Pawn(Piece):
@@ -121,6 +123,13 @@ class Pawn(Piece):
             if enemy(p, self.x + dx, self.y + dy, self.c):
                 moves.append([self.x + dx, self.y + dy])
         return moves
+    def onmove(self,p):
+        if self.c:
+            if self.y==7:
+                p[self.x][self.y]=Queen(self.x,self.y,1)
+        else:
+            if self.y==0:
+                p[self.x][self.y]=Queen(self.x,self.y,0)
 
 
 class Rook(Piece):
