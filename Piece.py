@@ -318,4 +318,4 @@ from Piece2 import *
 
 pieces = [Rook, RookX, ShortRook, Rookling, MiniRook, Knight, NightRider, Bishop, BishopX, Queen, Marshal, Princess,
           Amazon, King, Man, Antibody, Circle, Square, Window, SquareX, Ghost, Crab, ShortBishop, WideGuard,
-          NarrowGuard, Mimic, Star, Star2, Cannon,KnCross]
+          NarrowGuard, Mimic, Star, Star2, Cannon,KnCross, Ferz, Wazir, Elephant]

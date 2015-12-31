@@ -141,3 +141,30 @@ class KnCross(Piece):
 
     def get_moves(self, p):
         return get_rider_moves(p,self,[[2,1],[-2,1],[2,-1],[-2,-1]])+get_all_jumper_moves(p,self,0,1)
+
+class Ferz(Piece):
+    imgs=pload("Ferz")
+    value=1.5
+    symbol = "F"
+    desc = "Ferz: 1-step Bishop"
+
+    def get_moves(self, p):
+        return get_all_jumper_moves(p,self,1,1)
+
+class Wazir(Piece):
+    imgs = pload("Wazir")
+    value = 1
+    symbol = "W"
+    desc = "Wazir: 1-step Rook"
+
+    def get_moves(self, p):
+        return get_all_jumper_moves(p,self,0,1)
+
+class Elephant(Piece):
+    imgs=pload("Elephant")
+    value=2.5
+    symbol = "E"
+    desc = "Elephant: Afil+Ferz"
+
+    def get_moves(self, p):
+        return get_all_jumper_moves(p,self,1,1)+get_all_jumper_moves(p,self,2,2)
