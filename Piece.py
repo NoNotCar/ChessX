@@ -38,21 +38,21 @@ def get_all_jumper_moves(ps, p, d1, d2):
     return get_jumper_moves(ps, p, d1, d2) + get_jumper_moves(ps, p, d2, d1)
 
 
-def get_rider_moves(ps, p, dirs, maxi=7, mode=None):
+def get_rider_moves(ps, p, dirs, maxi=7,mini=0, mode=None):
     moves = []
     for dx, dy in dirs:
         x = p.x + dx
         y = p.y + dy
         n = 0
         while clear(ps, x, y):
-            if mode not in ["CAPTURE", "CANNON"]:
+            if mode not in ["CAPTURE", "CANNON"] and n>=mini:
                 moves.append([x, y])
             x += dx
             y += dy
             n += 1
             if n == maxi:
                 break
-        if piece(ps, x, y, p.c) and n != maxi and mode not in ["MOVE", "CANNON"]:
+        if piece(ps, x, y, p.c) and n != maxi and n>=mini and mode not in ["MOVE", "CANNON"]:
             moves.append([x, y])
         if mode == "CANNON" and inworld(x, y):
             x += dx
@@ -69,9 +69,9 @@ def get_rider_moves(ps, p, dirs, maxi=7, mode=None):
     return moves
 
 
-def get_all_rider_moves(ps, p, d1, d2, maxi=7, mode=None):
+def get_all_rider_moves(ps, p, d1, d2, maxi=7,mini=0, mode=None):
     return get_rider_moves(ps, p,[[d1, d2], [d2, d1], [-d1, d2], [-d2, d1], [d1, -d2], [d2, -d1], [-d1, -d2],[-d2, -d1]]
-                           , maxi, mode)
+                           , maxi,mini, mode)
 
 
 class Piece(object):
@@ -315,4 +315,4 @@ from Piece2 import *
 
 pieces = [Rook, RookX, ShortRook, Rookling, MiniRook, Knight, NightRider, Bishop, BishopX, Queen, Marshal, Princess,
           Amazon, King, Man, Antibody, Circle, Square, Window, SquareX, Ghost, Crab, ShortBishop, WideGuard,
-          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep]
+          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep, Penguin]

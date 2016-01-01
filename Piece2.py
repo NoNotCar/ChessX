@@ -175,3 +175,10 @@ class Sheep(Piece):
     desc = "Sheep: Bishop+Afilrider (BAA)"
     def get_moves(self, p):
         return get_all_rider_moves(p,self,1,1)+get_all_rider_moves(p,self,2,2)
+class Penguin(Piece):
+    imgs=pload("Penguin")
+    value=2
+    symbol="Pg"
+    desc = "Penguin: Moves 2-3 spaces like a rook"
+    def get_moves(self, p):
+        return get_all_rider_moves(p,self,0,1,3,1)

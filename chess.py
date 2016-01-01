@@ -104,8 +104,8 @@ if breaking=="PLAY":
     while True:
         if ai and board.turn:
             cmove=random.choice(board.get_best_moves(1))
-            edmoves=board.get_edmoves(board.turn)
             board.move_p(*cmove)
+            edmoves=board.get_edmoves(board.turn)
             board.turn=1-board.turn
             check=board.ischeck(board.turn)
             mate=board.is_mate(board.turn)
