@@ -1,4 +1,7 @@
 import copy
+def deduplicate(moves):
+    setmoves = set([(mx, my) for mx, my in moves])
+    return [[mx, my] for mx, my in setmoves]
 class Board(object):
     def __init__(self):
         self.p=[]
@@ -38,7 +41,7 @@ class Board(object):
                     royalps.append([p.x,p.y])
         for row in self.p:
             for p in row:
-                if p and p.c==1-side and [pos for pos in p.get_moves(self.p) if pos in royalps]:
+                if p and p.c==1-side and [pos for pos in self.get_moves(p)[0] if pos in royalps]:
                     return True
         return False
     def boardvalue(self,side):
@@ -58,7 +61,7 @@ class Board(object):
         for row in self.p:
             for p in row:
                 if p and p.c==side:
-                    for mx,my in p.get_moves(self.p):
+                    for mx,my in self.get_moves(p)[0]:
                         bco=copy.deepcopy(self)
                         bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
                         if bco.ischeck(1-side) and bco.is_mate(1-side):
@@ -78,7 +81,7 @@ class Board(object):
         for row in self.p:
             for p in row:
                 if p and p.c==side:
-                    for mx,my in p.get_moves(self.p):
+                    for mx,my in self.get_moves(p)[0]:
                         if self.p[mx][my]:
                             bco=copy.deepcopy(self)
                             bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
@@ -99,7 +102,7 @@ class Board(object):
         for row in self.p:
             for p in row:
                 if p and p.c==side:
-                    for mx,my in p.get_moves(self.p):
+                    for mx,my in self.get_moves(p)[0]:
                         bco=copy.deepcopy(self)
                         bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
                         if not bco.ischeck(side):
@@ -116,6 +119,24 @@ class Board(object):
             else:
                 return True
         return False
+
+    def get_moves(self,p):
+        moves=[]
+        defmoves=[]
+        for mx,my in deduplicate(p.get_moves(self.p)):
+            mp=self.get_p(mx,my)
+            if mp and mp.c==p.c:
+                defmoves.append([mx,my])
+            else:
+                moves.append([mx,my])
+        return moves,defmoves
+    def get_edmoves(self,side):
+        edmoves=[]
+        for p in self.gen_ps(side):
+            edmoves.extend(self.get_moves(p)[1])
+        return deduplicate(edmoves)
+
+
 
     def gen_ps(self,side=None):
         for row in self.p:

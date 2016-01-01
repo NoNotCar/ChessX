@@ -1,4 +1,4 @@
-from Piece import Piece, get_all_jumper_moves, get_exact_jumper_moves, get_rider_moves, get_jumper_moves, clear, enemy, \
+from Piece import Piece, get_all_jumper_moves, get_exact_jumper_moves, get_rider_moves, get_jumper_moves, clear, \
     inworld, get_all_rider_moves
 from Img import pload
 
@@ -168,3 +168,10 @@ class Elephant(Piece):
 
     def get_moves(self, p):
         return get_all_jumper_moves(p,self,1,1)+get_all_jumper_moves(p,self,2,2)
+class Sheep(Piece):
+    imgs = pload("Sheep")
+    value=4
+    symbol = "Sh"
+    desc = "Sheep: Bishop+Afilrider (BAA)"
+    def get_moves(self, p):
+        return get_all_rider_moves(p,self,1,1)+get_all_rider_moves(p,self,2,2)

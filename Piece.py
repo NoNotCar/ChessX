@@ -1,11 +1,6 @@
 from Img import pload
 
 
-def deduplicate(moves):
-    setmoves = set([(mx, my) for mx, my in moves])
-    return [[mx, my] for mx, my in setmoves]
-
-
 def inworld(x, y):
     return 0 <= x < 8 and 0 <= y < 8
 
@@ -14,8 +9,8 @@ def clear(p, x, y):
     return inworld(x, y) and not p[x][y]
 
 
-def enemy(p, x, y, c):
-    return inworld(x, y) and p[x][y] and p[x][y].c != c
+def piece(p, x, y, c):
+    return inworld(x, y) and p[x][y]
 
 
 def get_jumper_moves(ps, p, jdx, jdy):
@@ -24,7 +19,7 @@ def get_jumper_moves(ps, p, jdx, jdy):
         for dy in [-jdy, jdy]:
             x = p.x + dx
             y = p.y + dy
-            if clear(ps, x, y) or enemy(ps, x, y, p.c) and [x, y] not in moves:
+            if clear(ps, x, y) or piece(ps, x, y, p.c) and [x, y] not in moves:
                 moves.append([x, y])
     return moves
 
@@ -34,7 +29,7 @@ def get_exact_jumper_moves(ps, p, jumps):
     for dx, dy in jumps:
         x = p.x + dx
         y = p.y + dy
-        if clear(ps, x, y) or enemy(ps, x, y, p.c) and [x, y] not in moves:
+        if clear(ps, x, y) or piece(ps, x, y, p.c) and [x, y] not in moves:
             moves.append([x, y])
     return moves
 
@@ -57,7 +52,7 @@ def get_rider_moves(ps, p, dirs, maxi=7, mode=None):
             n += 1
             if n == maxi:
                 break
-        if enemy(ps, x, y, p.c) and n != maxi and mode not in ["MOVE", "CANNON"]:
+        if piece(ps, x, y, p.c) and n != maxi and mode not in ["MOVE", "CANNON"]:
             moves.append([x, y])
         if mode == "CANNON" and inworld(x, y):
             x += dx
@@ -69,15 +64,14 @@ def get_rider_moves(ps, p, dirs, maxi=7, mode=None):
                 n += 1
                 if n == maxi:
                     break
-            if enemy(ps, x, y, p.c) and n != maxi:
+            if piece(ps, x, y, p.c) and n != maxi:
                 moves.append([x, y])
     return moves
 
 
 def get_all_rider_moves(ps, p, d1, d2, maxi=7, mode=None):
-    return deduplicate(get_rider_moves(ps, p,
-                                       [[d1, d2], [d2, d1], [-d1, d2], [-d2, d1], [d1, -d2], [d2, -d1], [-d1, -d2],
-                                        [-d2, -d1]], maxi, mode))
+    return get_rider_moves(ps, p,[[d1, d2], [d2, d1], [-d1, d2], [-d2, d1], [d1, -d2], [d2, -d1], [-d1, -d2],[-d2, -d1]]
+                           , maxi, mode)
 
 
 class Piece(object):
@@ -101,7 +95,8 @@ class Piece(object):
     def place(self, x, y):
         self.x = x
         self.y = y
-    def onmove(self,p):
+
+    def onmove(self, p):
         pass
 
 
@@ -120,16 +115,17 @@ class Pawn(Piece):
                 if clear(p, self.x, self.y + dy * 2):
                     moves.append([self.x, self.y + dy * 2])
         for dx in [-1, 1]:
-            if enemy(p, self.x + dx, self.y + dy, self.c):
+            if piece(p, self.x + dx, self.y + dy, self.c):
                 moves.append([self.x + dx, self.y + dy])
         return moves
-    def onmove(self,p):
+
+    def onmove(self, p):
         if self.c:
-            if self.y==7:
-                p[self.x][self.y]=Queen(self.x,self.y,1)
+            if self.y == 7:
+                p[self.x][self.y] = Queen(self.x, self.y, 1)
         else:
-            if self.y==0:
-                p[self.x][self.y]=Queen(self.x,self.y,0)
+            if self.y == 0:
+                p[self.x][self.y] = Queen(self.x, self.y, 0)
 
 
 class Rook(Piece):
@@ -169,7 +165,7 @@ class Queen(Piece):
     desc = "Queen"
 
     def get_moves(self, p):
-        return get_all_rider_moves(p,self,1,1)+get_all_rider_moves(p,self,0,1)
+        return get_all_rider_moves(p, self, 1, 1) + get_all_rider_moves(p, self, 0, 1)
 
 
 class King(Piece):
@@ -230,7 +226,8 @@ class Amazon(Piece):
     desc = "Amazon: Queen+Knight"
 
     def get_moves(self, p):
-        return get_all_rider_moves(p,self,1,1)+get_all_rider_moves(p,self,0,1)+get_all_jumper_moves(p, self, 1, 2)
+        return get_all_rider_moves(p, self, 1, 1) + get_all_rider_moves(p, self, 0, 1) + get_all_jumper_moves(p, self,
+                                                                                                              1, 2)
 
 
 class ShortRook(Piece):
@@ -291,7 +288,7 @@ class NightRider(Piece):
     desc = "Nightrider: Moves repeatedly like a knight"
 
     def get_moves(self, p):
-        return get_all_rider_moves(p, self, 1,2)
+        return get_all_rider_moves(p, self, 1, 2)
 
 
 class BishopX(Piece):
@@ -318,4 +315,4 @@ from Piece2 import *
 
 pieces = [Rook, RookX, ShortRook, Rookling, MiniRook, Knight, NightRider, Bishop, BishopX, Queen, Marshal, Princess,
           Amazon, King, Man, Antibody, Circle, Square, Window, SquareX, Ghost, Crab, ShortBishop, WideGuard,
-          NarrowGuard, Mimic, Star, Star2, Cannon,KnCross, Ferz, Wazir, Elephant]
+          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep]

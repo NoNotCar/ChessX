@@ -83,12 +83,17 @@ if breaking=="PLAY":
     select=Img.img64("Select")
     move=Img.img64("Move")
     capture=Img.img64("Capture")
+    defend=Img.img64("Defend")
+    danger=Img.img64("Danger")
     hmove=Img.img64("HoverMove")
     hcapt=Img.img64("HoverCapture")
+    hdef=Img.img64("HoverDefend")
     resign=Img.img("Resign")
     hsel=None
     selected=None
     moves=[]
+    dmoves=[]
+    edmoves=board.get_edmoves(1)
     for x in range(8):
         board.add_p(Pawn,x,1,1)
         board.add_p(Pawn,x,6,0)
@@ -99,6 +104,7 @@ if breaking=="PLAY":
     while True:
         if ai and board.turn:
             cmove=random.choice(board.get_best_moves(1))
+            edmoves=board.get_edmoves(board.turn)
             board.move_p(*cmove)
             board.turn=1-board.turn
             check=board.ischeck(board.turn)
@@ -123,8 +129,10 @@ if breaking=="PLAY":
                         if mpos==[mx,my]:
                             if board.move_p(selected,mx,my):
                                 selected=None
+                                edmoves=board.get_edmoves(board.turn)
                                 board.turn=1-board.turn
                                 moves=[]
+                                dmoves=[]
                                 check=board.ischeck(board.turn)
                                 mate=board.is_mate(board.turn)
                                 if board.is_stalemate():
@@ -138,25 +146,30 @@ if breaking=="PLAY":
                             selp=board.p[mpos[0]][mpos[1]]
                             if selp and selp.c==board.turn:
                                 selected=selp
-                                moves=[[x,y] for x,y in selected.get_moves(board.p) if 0<=x<8 and 0<=y<8]
+                                moves,dmoves=board.get_moves(selp)
                                 if selected is hsel:
                                     hsel=None
                             else:
                                 selected=None
                                 moves=[]
+                                dmoves=[]
                         else:
                             selected=None
                             moves=[]
+                            dmoves=[]
         screen.fill((84,33,0))
         for x in range(8):
             for y in range(8):
                 pygame.draw.rect(screen,bb if (x+y)%2 else bw, pygame.Rect(x*64+32,y*64+32,64,64))
         if hsel:
-            for mx,my in hsel.get_moves(board.p):
+            gmoves=board.get_moves(hsel)
+            for mx,my in gmoves[0]:
                 if board.get_p(mx,my):
                     screen.blit(hcapt,(mx*64+32,my*64+32))
                 else:
                     screen.blit(hmove,(mx*64+32,my*64+32))
+            for mx,my in gmoves[1]:
+                screen.blit(hdef,(mx*64+32,my*64+32))
         showpoints=pygame.mouse.get_pressed()[2]
         for row in board.p:
             for p in row:
@@ -169,8 +182,12 @@ if breaking=="PLAY":
         for mx,my in moves:
             if board.p[mx][my]:
                 screen.blit(capture,(mx*64+32,my*64+32))
+                if [mx,my] in edmoves:
+                    screen.blit(danger,(mx*64+32,my*64+32))
             else:
                 screen.blit(move,(mx*64+32,my*64+32))
+        for mx,my in dmoves:
+            screen.blit(defend,(mx*64+32,my*64+32))
         mpos=pygame.mouse.get_pos()
         mpos=[(m-32)//64 for m in mpos]
         if 0<=mpos[0]<8 and 0<=mpos[1]<8:
