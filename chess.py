@@ -93,7 +93,6 @@ if breaking=="PLAY":
     selected=None
     moves=[]
     dmoves=[]
-    edmoves=board.get_edmoves(1)
     for x in range(8):
         board.add_p(Pawn,x,1,1)
         board.add_p(Pawn,x,6,0)
@@ -101,6 +100,7 @@ if breaking=="PLAY":
         y=(1-c)*7
         for n,pc in enumerate(sranks[rankselections[c]]):
             board.add_p(pc,n,y,c)
+    edmoves=board.get_edmoves(1)
     while True:
         if ai and board.turn:
             cmove=random.choice(board.get_best_moves(1))
