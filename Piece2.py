@@ -88,7 +88,7 @@ class Window(Piece):
     imgs = pload("Window")
     value = 8.5
     symbol = "Wd"
-    desc = "Window: Knight+Afil+Dabbaba+Wazir"
+    desc = "Window: Knight+Alfil+Dabbaba+Wazir"
 
     def get_moves(self, p):
         return get_all_jumper_moves(p, self, 1, 2) + get_all_jumper_moves(p, self, 0, 2) + \
@@ -99,7 +99,7 @@ class SquareX(Piece):
     imgs = pload("SquareX")
     value = 10
     symbol = "SqX"
-    desc = "SquareX: Knight+Afil+Dabbaba+King"
+    desc = "SquareX: Knight+Alfil+Dabbaba+King"
 
     def get_moves(self, p):
         return get_all_jumper_moves(p, self, 1, 2) + get_all_jumper_moves(p, self, 0, 2) + \
@@ -164,7 +164,7 @@ class Elephant(Piece):
     imgs=pload("Elephant")
     value=2.5
     symbol = "E"
-    desc = "Elephant: Afil+Ferz"
+    desc = "Elephant: Alfil+Ferz"
 
     def get_moves(self, p):
         return get_all_jumper_moves(p,self,1,1)+get_all_jumper_moves(p,self,2,2)
@@ -172,7 +172,7 @@ class Sheep(Piece):
     imgs = pload("Sheep")
     value=4
     symbol = "Sh"
-    desc = "Sheep: Bishop+Afilrider (BAA)"
+    desc = "Sheep: Bishop+Alfilrider (BAA)"
     def get_moves(self, p):
         return get_all_rider_moves(p,self,1,1)+get_all_rider_moves(p,self,2,2)
 class Penguin(Piece):
@@ -182,3 +182,10 @@ class Penguin(Piece):
     desc = "Penguin: Moves 2-3 spaces like a rook"
     def get_moves(self, p):
         return get_all_rider_moves(p,self,0,1,3,1)
+class Dabbaba(Piece):
+    imgs=pload("Dabbaba")
+    value=1
+    symbol = "D"
+    desc = "Dabbaba: Jumps 2 spaces orthogonally"
+    def get_moves(self, p):
+        return get_all_jumper_moves(p,self,0,2)

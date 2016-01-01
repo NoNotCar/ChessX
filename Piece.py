@@ -264,7 +264,7 @@ class Square(Piece):
     imgs = pload("Square")
     value = 7
     symbol = "Sq"
-    desc = "Square: Knight+Afil+Dabbaba"
+    desc = "Square: Knight+Alfil+Dabbaba"
 
     def get_moves(self, p):
         return get_all_jumper_moves(p, self, 1, 2) + get_all_jumper_moves(p, self, 0, 2) \
@@ -315,4 +315,4 @@ from Piece2 import *
 
 pieces = [Rook, RookX, ShortRook, Rookling, MiniRook, Knight, NightRider, Bishop, BishopX, Queen, Marshal, Princess,
           Amazon, King, Man, Antibody, Circle, Square, Window, SquareX, Ghost, Crab, ShortBishop, WideGuard,
-          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep, Penguin]
+          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep, Penguin, Dabbaba]
