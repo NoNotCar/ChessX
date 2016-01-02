@@ -17,6 +17,8 @@ airect=eRect
 check=False
 mate=False
 ai=False
+pygame.display.set_caption("CHESS X")
+pygame.display.set_icon(Img.imgsz("Pieces/BAmazon",(32,32)))
 while not breaking:
     for event in pygame.event.get():
         if event.type==pygame.QUIT:

@@ -38,21 +38,21 @@ def get_all_jumper_moves(ps, p, d1, d2):
     return get_jumper_moves(ps, p, d1, d2) + get_jumper_moves(ps, p, d2, d1)
 
 
-def get_rider_moves(ps, p, dirs, maxi=7,mini=0, mode=None):
+def get_rider_moves(ps, p, dirs, maxi=7, mini=0, mode=None):
     moves = []
     for dx, dy in dirs:
         x = p.x + dx
         y = p.y + dy
         n = 0
         while clear(ps, x, y):
-            if mode not in ["CAPTURE", "CANNON"] and n>=mini:
+            if mode not in ["CAPTURE", "CANNON"] and n >= mini:
                 moves.append([x, y])
             x += dx
             y += dy
             n += 1
             if n == maxi:
                 break
-        if piece(ps, x, y, p.c) and n != maxi and n>=mini and mode not in ["MOVE", "CANNON"]:
+        if piece(ps, x, y, p.c) and n != maxi and n >= mini and mode not in ["MOVE", "CANNON"]:
             moves.append([x, y])
         if mode == "CANNON" and inworld(x, y):
             x += dx
@@ -69,13 +69,13 @@ def get_rider_moves(ps, p, dirs, maxi=7,mini=0, mode=None):
     return moves
 
 
-def get_all_rider_moves(ps, p, d1, d2, maxi=7,mini=0, mode=None):
-    return get_rider_moves(ps, p,[[d1, d2], [d2, d1], [-d1, d2], [-d2, d1], [d1, -d2], [d2, -d1], [-d1, -d2],[-d2, -d1]]
-                           , maxi,mini, mode)
+def get_all_rider_moves(ps, p, d1, d2, maxi=7, mini=0, mode=None):
+    return get_rider_moves(ps, p,
+                           [[d1, d2], [d2, d1], [-d1, d2], [-d2, d1], [d1, -d2], [d2, -d1], [-d1, -d2], [-d2, -d1]]
+                           , maxi, mini, mode)
 
 
 class Piece(object):
-    imgs = None
     royal = False
     value = 0
     symbol = "Pc"
@@ -85,7 +85,11 @@ class Piece(object):
         self.x = x
         self.y = y
         self.c = c
+        self.__class__.set_imgs()
 
+    @classmethod
+    def set_imgs(cls):
+        cls.imgs = pload(cls.__name__) if cls.__name__!="Piece" else None
     def get_img(self):
         return self.imgs[self.c]
 
@@ -101,7 +105,6 @@ class Piece(object):
 
 
 class Pawn(Piece):
-    imgs = pload("Pawn")
     value = 1
     symbol = "Pn"
     desc = "Pawn"
@@ -130,7 +133,6 @@ class Pawn(Piece):
 
 class Rook(Piece):
     value = 5
-    imgs = pload("Rook")
     symbol = "R"
     desc = "Rook"
 
@@ -139,7 +141,6 @@ class Rook(Piece):
 
 
 class Knight(Piece):
-    imgs = pload("Knight")
     value = 3
     symbol = "N"
     desc = "Knight"
@@ -149,7 +150,6 @@ class Knight(Piece):
 
 
 class Bishop(Piece):
-    imgs = pload("Bishop")
     value = 3
     symbol = "B"
     desc = "Bishop"
@@ -159,7 +159,6 @@ class Bishop(Piece):
 
 
 class Queen(Piece):
-    imgs = pload("Queen")
     value = 9
     symbol = "Q"
     desc = "Queen"
@@ -169,7 +168,6 @@ class Queen(Piece):
 
 
 class King(Piece):
-    imgs = pload("King")
     royal = True
     symbol = "K"
     desc = "King"
@@ -179,7 +177,6 @@ class King(Piece):
 
 
 class Man(Piece):
-    imgs = pload("Man")
     value = 3
     symbol = "Mn"
     desc = "Commoner: Non-royal King"
@@ -189,7 +186,6 @@ class Man(Piece):
 
 
 class Princess(Piece):
-    imgs = pload("Princess")
     value = 8
     symbol = "Ps"
     desc = "Princess: Bishop+Knight"
@@ -199,7 +195,6 @@ class Princess(Piece):
 
 
 class Marshal(Piece):
-    imgs = pload("Marshal")
     value = 9
     symbol = "Ms"
     desc = "Marshal: Rook+Knight"
@@ -209,7 +204,6 @@ class Marshal(Piece):
 
 
 class Antibody(Piece):
-    imgs = pload("Antibody")
     value = 1
     symbol = "Ab"
     desc = "Antibody: Moves 1 space in the direction of its arms."
@@ -220,7 +214,6 @@ class Antibody(Piece):
 
 
 class Amazon(Piece):
-    imgs = pload("Amazon")
     value = 12
     symbol = "Az"
     desc = "Amazon: Queen+Knight"
@@ -231,7 +224,6 @@ class Amazon(Piece):
 
 
 class ShortRook(Piece):
-    imgs = pload("ShortRook")
     value = 3
     symbol = "Sr"
     desc = "Short Rook: Moves 4 spaces rookwise"
@@ -241,7 +233,6 @@ class ShortRook(Piece):
 
 
 class MiniRook(Piece):
-    imgs = pload("MiniRook")
     value = 2
     symbol = "Mr"
     desc = "Mini Rook: Moves 2 spaces rookwise"
@@ -251,7 +242,6 @@ class MiniRook(Piece):
 
 
 class Circle(Piece):
-    imgs = pload("Circle")
     value = 6
     symbol = "Cc"
     desc = "Circle: Knight+Dabbaba"
@@ -261,7 +251,6 @@ class Circle(Piece):
 
 
 class Square(Piece):
-    imgs = pload("Square")
     value = 7
     symbol = "Sq"
     desc = "Square: Knight+Alfil+Dabbaba"
@@ -272,7 +261,6 @@ class Square(Piece):
 
 
 class Rookling(Piece):
-    imgs = pload("Rookling")
     symbol = "Rl"
     value = 3
     desc = "Rookling: Moves 2 spaces rookwise and can jump."
@@ -282,7 +270,6 @@ class Rookling(Piece):
 
 
 class NightRider(Piece):
-    imgs = pload("NightRider")
     symbol = "Nr"
     value = 5
     desc = "Nightrider: Moves repeatedly like a knight"
@@ -292,7 +279,6 @@ class NightRider(Piece):
 
 
 class BishopX(Piece):
-    imgs = pload("BishopX")
     symbol = "BX"
     value = 5.5
     desc = "Bishop X: Bishop that can move 1 space orthogonally."
@@ -302,7 +288,6 @@ class BishopX(Piece):
 
 
 class RookX(Piece):
-    imgs = pload("RookX")
     symbol = "RX"
     value = 6.5
     desc = "Rook X: Rook that can move 1 space diagonally"
@@ -313,6 +298,8 @@ class RookX(Piece):
 
 from Piece2 import *
 
-pieces = [Rook, RookX, ShortRook, Rookling, MiniRook, Knight, NightRider, Bishop, BishopX, Queen, Marshal, Princess,
-          Amazon, King, Man, Antibody, Circle, Square, Window, SquareX, Ghost, Crab, ShortBishop, WideGuard,
-          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep, Penguin, Dabbaba]
+pieces = [Rook, RookX, ShortRook, Rookling, RooklingX, MiniRook, Knight, NightRider, Bishop, BishopX, Queen, Marshal,
+          Princess, Amazon, King, Man, Antibody, Circle, Square, Window, SquareX, Ghost, Crab, ShortBishop, WideGuard,
+          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep, Penguin, Dabbaba, Bede]
+for p in pieces:
+    p.set_imgs()
