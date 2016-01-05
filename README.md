@@ -5,4 +5,5 @@ Make your own chess army and play against the computer or friends! Another proje
 * AI of dubious intelligence and much thinking time!
 * Many pre-made armies for you to play with!
 
-##Screenshots coming soon
+##Screenshots
+![some random screenshot](/Assets/screenie.png)
