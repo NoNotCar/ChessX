@@ -1,4 +1,6 @@
 import copy
+from operator import itemgetter
+import pygame
 def deduplicate(moves):
     setmoves = set([(mx, my) for mx, my in moves])
     return [[mx, my] for mx, my in setmoves]
@@ -48,7 +50,7 @@ class Board(object):
         dbv=self.get_delta_board_value(1-side)
         if dbv=="CHECKMATE":
             return -1000
-        return sum(p.value for p in self.gen_ps(side))-sum(p.value for p in self.gen_ps(1-side))-self.get_delta_board_value(1-side)
+        return sum(p.value for p in self.gen_ps(side))-sum(p.value for p in self.gen_ps(1-side))-dbv
     def basic_board_value(self,side):
         return sum(p.value for p in self.gen_ps(side))-sum(p.value for p in self.gen_ps(1-side))
     def developement_value(self,side):
@@ -57,20 +59,56 @@ class Board(object):
     def dist(self,p1,p2):
         return abs(p1.x-p2.x)+abs(p1.y-p2.y)
     def get_best_moves(self,side):
-        moves=[]
+        moves=[[],[],[]]
+        startvalue=self.basic_board_value(side)
         for row in self.p:
             for p in row:
                 if p and p.c==side:
+                    pygame.event.pump()
                     for mx,my in self.get_moves(p)[0]:
                         bco=copy.deepcopy(self)
                         bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
                         if bco.ischeck(1-side) and bco.is_mate(1-side):
                             return [[p,mx,my]]
                         if not bco.ischeck(side):
+                            bbv=bco.basic_board_value(side)
                             if bco.is_stalemate():
-                                moves.append([p,mx,my,-500,bco.developement_value(side)])
+                                moves[2].append([p,mx,my,-500,bco.developement_value(side),bco])
                             else:
-                                moves.append([p,mx,my,bco.boardvalue(side),bco.developement_value(side)])
+                                moves[0 if bbv>startvalue else 1].append([p,mx,my,bbv,bco.developement_value(side),bco])
+        for amove in sorted(moves[0],key=itemgetter(3)):
+            pygame.event.pump()
+            bv=amove[5].boardvalue(side)
+            if bv>=amove[3]:
+                return [amove[:3]]
+            elif startvalue<bv:
+                if len(moves)==3:
+                    moves=[[]]
+                amove[3]=bv
+                moves[0].append(amove[:5])
+            else:
+                amove[3]=bv
+                moves[2].append(amove)
+        if len(moves)==3:
+            for zmove in moves[1]:
+                pygame.event.pump()
+                bv=zmove[5].boardvalue(side)
+                if bv>zmove[3]:
+                    return [zmove[:3]]
+                elif bv==zmove[3]:
+                    if len(moves)==3:
+                        moves=[[]]
+                    zmove[3]=bv
+                    moves[0].append(zmove[:5])
+                else:
+                    zmove[3]=bv
+        if len(moves)==3:
+            smoves=moves[2]
+            moves=moves[1]
+            if not len(moves):
+                return smoves
+        else:
+            moves=moves[0]
         bv=max([m[3] for m in moves])
         bvs=[m[:3]+[m[4]] for m in moves if m[3]==bv]
         bd=min([m[3] for m in bvs])
@@ -78,22 +116,24 @@ class Board(object):
     def get_delta_board_value(self,side):
         sbv=self.basic_board_value(side)
         moves=[]
-        for row in self.p:
-            for p in row:
-                if p and p.c==side:
-                    for mx,my in self.get_moves(p)[0]:
-                        if self.p[mx][my]:
-                            bco=copy.deepcopy(self)
-                            bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
-                            if bco.ischeck(1-side) and bco.is_mate(1-side):
-                                return "CHECKMATE"
-                            if not bco.ischeck(side):
-                                moves.append([p,mx,my,bco.basic_board_value(side)])
+        defmoves=self.get_edmoves(1-side)
+        for p in self.gen_ps(side):
+            for mx,my in self.get_moves(p)[0]:
+                if self.p[mx][my]:
+                    bco=copy.deepcopy(self)
+                    bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
+                    if bco.ischeck(1-side) and bco.is_mate(1-side):
+                        return "CHECKMATE"
+                    if not bco.ischeck(side):
+                        if [mx,my] in defmoves:
+                            moves.append([p,mx,my,bco.basic_board_value(side)-p.value])
                         else:
-                            bco=copy.deepcopy(self)
-                            bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
-                            if bco.ischeck(1-side) and bco.is_mate(1-side):
-                                return "CHECKMATE"
+                            moves.append([p,mx,my,bco.basic_board_value(side)])
+                else:
+                    bco=copy.deepcopy(self)
+                    bco.move_p(bco.get_p(p.x,p.y),mx,my,True)
+                    if bco.ischeck(1-side) and bco.is_mate(1-side):
+                        return "CHECKMATE"
         if not moves:
             return 0
         bv=max([m[3] for m in moves])
