@@ -106,7 +106,7 @@ class Board(object):
             smoves=moves[2]
             moves=moves[1]
             if not len(moves):
-                return smoves
+                return [sm[:3] for sm in smoves]
         else:
             moves=moves[0]
         bv=max([m[3] for m in moves])

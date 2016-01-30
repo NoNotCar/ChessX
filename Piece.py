@@ -295,11 +295,17 @@ class RookX(Piece):
     def get_moves(self, p):
         return get_all_rider_moves(p, self, 0, 1) + get_all_jumper_moves(p, self, 1, 1)
 
+class Null(Piece):
+    symbol = "No"
+    value = 0
+    desc = "An Empty Square"
+
+
 
 from Piece2 import *
 
 pieces = [Rook, RookX, ShortRook, Rookling, RooklingX, MiniRook, Knight, NightRider, Bishop, BishopX, Queen, Marshal,
           Princess, Amazon, King, Man, Antibody, Circle, Square, Window, SquareX, Ghost, Crab, ShortBishop, WideGuard,
-          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep, Penguin, Dabbaba, Bede]
+          NarrowGuard, Mimic, Star, Star2, Cannon, KnCross, Ferz, Wazir, Elephant, Sheep, Penguin, Dabbaba, Bede, Null]
 for p in pieces:
     p.set_imgs()

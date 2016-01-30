@@ -101,7 +101,8 @@ if breaking=="PLAY":
     for c in range(2):
         y=(1-c)*7
         for n,pc in enumerate(sranks[rankselections[c]]):
-            board.add_p(pc,n,y,c)
+            if pc is not Null:
+                board.add_p(pc,n,y,c)
     edmoves=board.get_edmoves(1)
     while True:
         if ai and board.turn:
